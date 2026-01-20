@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <!-- Mobile Web App Settings -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#1e3a8a">
+    <meta name="application-name" content="Trắc Nghiệm CN11">
+    <meta name="apple-mobile-web-app-title" content="Trắc Nghiệm CN11">
+
+    <title>Trắc Nghiệm Công Nghệ 11 - Bài 16</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap');
+        
+        * {
+            -webkit-tap-highlight-color: transparent;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Be Vietnam Pro', sans-serif;
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            min-height: 100vh;
+            min-height: 100dvh; 
+            margin: 0;
+            padding: 0;
+            overscroll-behavior-y: none;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        /* App Container */
+        #app-container {
+            width: 100%;
+            min-height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 1.5rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            width: 100%;
+            max-width: 600px;
+            overflow: hidden;
+        }
+
+        .custom-scroll {
+            overflow-y: auto;
+            max-height: 70vh;
+            scrollbar-width: thin;
+        }
+
+        .option-card {
+            transition: transform 0.1s, background-color 0.2s;
+            cursor: pointer;
+        }
+
+        .option-card:active:not(:disabled) {
+            transform: scale(0.98);
+        }
+
+        .correct-anim { animation: bounce 0.5s; }
+        .shake-anim { animation: shake 0.5s; }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        input[type="text"] {
+            user-select: text;
+            -webkit-user-select: text;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="app-container">
+        
+        <!-- Start Screen -->
+        <div id="start-screen" class="glass-panel p-6 text-center animate-fade-in flex flex-col items-center">
+            <div class="mb-4 text-blue-600 mt-2">
+                <i class="fas fa-cogs text-5xl"></i>
+            </div>
+            <h1 class="text-2xl font-bold text-gray-800 mb-1">Công Nghệ 11 - Bài 16</h1>
+            <h2 class="text-md text-gray-600 mb-6 font-medium">Ngành nghề cơ khí động lực</h2>
+
+            <div class="w-full space-y-3 mb-6 text-left">
+                <div>
+                    <label class="block text-gray-700 text-xs font-bold mb-1 ml-1 uppercase tracking-wide">
+                        Họ và tên
+                    </label>
+                    <input class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:border-blue-500 focus:bg-white focus:outline-none transition-colors shadow-sm" 
+                           id="student-name" type="text" placeholder="Nhập tên của em...">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-gray-700 text-xs font-bold mb-1 ml-1 uppercase tracking-wide">
+                            Lớp
+                        </label>
+                        <input class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:border-blue-500 focus:bg-white focus:outline-none transition-colors shadow-sm" 
+                               id="student-class" type="text" placeholder="11A...">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-xs font-bold mb-1 ml-1 uppercase tracking-wide">
+                            Bài học
+                        </label>
+                        <input class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:border-blue-500 focus:bg-white focus:outline-none transition-colors shadow-sm" 
+                               id="lesson-name" type="text" value="Bài 16">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cấu hình Google Script URL (Ẩn hoặc hiện tùy nhu cầu, ở đây ẩn và dùng biến JS) -->
+            
+            <button onclick="quizApp.startQuiz()" class="w-full bg-blue-600 active:bg-blue-700 text-white font-bold py-4 px-6 rounded-xl shadow-lg text-lg flex items-center justify-center transform transition-transform active:scale-95">
+                <span>Vào Làm Bài</span> <i class="fas fa-arrow-right ml-2"></i>
+            </button>
+            
+            <p class="mt-4 text-xs text-gray-400">Ứng dụng trắc nghiệm v2.1 - Fix Input</p>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quiz-screen" class="hidden w-full max-w-xl flex flex-col h-full justify-start pt-2">
+            <div class="flex justify-between items-center mb-3 text-white px-1">
+                <div class="flex items-center space-x-2">
+                    <span class="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+                        Câu <span id="current-q-num">1</span>/10
+                    </span>
+                </div>
+                <div class="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold">
+                    Điểm: <span id="current-score">0</span>
+                </div>
+            </div>
+
+            <div class="w-full bg-blue-900/30 rounded-full h-1.5 mb-4 mx-1">
+                <div id="progress-bar" class="bg-yellow-400 h-1.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+            </div>
+
+            <div class="glass-panel p-5 flex-grow flex flex-col relative custom-scroll">
+                <div class="mb-4">
+                     <span class="inline-block px-2 py-1 bg-blue-100 text-blue-800 text-xs font-bold rounded-md mb-2" id="q-type-label">Trắc nghiệm</span>
+                    <h3 id="question-text" class="text-lg font-bold text-gray-800 leading-snug">Loading...</h3>
+                </div>
+                
+                <div id="options-container" class="space-y-3 pb-20"></div>
+
+                <div id="input-container" class="hidden mt-2">
+                    <input type="text" id="fill-input" placeholder="Nhập đáp án..." 
+                           class="w-full p-4 border-2 border-gray-200 bg-gray-50 rounded-xl focus:border-blue-500 focus:bg-white focus:outline-none text-lg mb-3">
+                    <button onclick="quizApp.submitFillIn()" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold shadow-md active:bg-blue-800">Trả lời</button>
+                </div>
+
+                <div id="multi-submit-container" class="hidden mt-4 pb-20">
+                    <button onclick="quizApp.submitMultiSelect()" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold shadow-md active:bg-blue-800">Xác nhận chọn</button>
+                </div>
+            </div>
+
+            <div id="feedback-area" class="hidden fixed bottom-0 left-0 right-0 p-4 bg-white/95 backdrop-blur-md border-t-2 shadow-2xl z-50 rounded-t-2xl transform transition-transform duration-300 translate-y-0">
+                <div class="max-w-xl mx-auto">
+                    <div class="flex items-start mb-3">
+                        <div id="feedback-icon" class="text-2xl mr-3 mt-0.5"></div>
+                        <div>
+                            <h4 id="feedback-title" class="font-bold text-base"></h4>
+                            <p id="feedback-text" class="text-sm text-gray-700 mt-1 leading-snug"></p>
+                        </div>
+                    </div>
+                    <button onclick="quizApp.nextQuestion()" id="next-btn" class="w-full bg-gray-900 text-white py-3 rounded-xl font-bold text-md active:scale-95 transition-transform shadow-lg flex justify-center items-center">
+                        Tiếp theo <i class="fas fa-chevron-right ml-2"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Result Screen -->
+        <div id="result-screen" class="hidden glass-panel p-6 text-center w-full">
+            <div class="mb-4">
+                <i id="result-icon" class="fas fa-trophy text-yellow-400 text-6xl animate-bounce drop-shadow-md"></i>
+            </div>
+            
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">Hoàn Thành!</h2>
+
+            <div id="student-result-info" class="mb-6"></div>
+
+            <div class="relative w-32 h-32 mx-auto mb-6 flex items-center justify-center">
+                <div class="absolute inset-0 border-4 border-blue-100 rounded-full"></div>
+                <div class="text-4xl font-black text-blue-600" id="final-score">0</div>
+                <div class="absolute bottom-6 text-xs text-gray-400 font-bold">ĐIỂM</div>
+            </div>
+            
+            <p id="result-message" class="text-gray-600 mb-4 font-medium px-4">Bạn đã làm rất tốt!</p>
+
+            <!-- Status Sending to Google Sheet -->
+            <div id="sync-status" class="mb-6 p-3 rounded-xl bg-gray-100 text-sm font-medium text-gray-500">
+                <i class="fas fa-circle-notch fa-spin mr-2"></i> Đang gửi kết quả về hệ thống...
+            </div>
+            
+            <div class="grid grid-cols-2 gap-3 mb-6">
+                <div class="bg-green-50 p-3 rounded-xl border border-green-100">
+                    <span class="block text-green-600 font-bold text-xl" id="right-count">0</span>
+                    <span class="text-xs text-green-700 font-bold uppercase">Đúng</span>
+                </div>
+                <div class="bg-red-50 p-3 rounded-xl border border-red-100">
+                    <span class="block text-red-600 font-bold text-xl" id="wrong-count">0</span>
+                    <span class="text-xs text-red-700 font-bold uppercase">Sai</span>
+                </div>
+            </div>
+
+            <button onclick="quizApp.resetQuiz()" class="w-full bg-blue-600 text-white font-bold py-3 px-6 rounded-xl shadow-lg active:bg-blue-700 transition-colors flex justify-center items-center">
+                <i class="fas fa-redo mr-2"></i> Làm lại bài
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        // ==========================================
+        // CẤU HÌNH GOOGLE SHEET
+        // HÃY DÁN ĐƯỜNG LINK WEB APP CỦA BẠN VÀO DƯỚI ĐÂY
+        // ==========================================
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxNEwJH212UmNrac5UHWAlwygaaD4RLH6g02Jitieq71k3ltFbv7ihbiZ_mF2fHsE3b/exec"; 
+        // Ví dụ: "https://script.google.com/macros/s/AKfycbx.../exec"
+        // Nếu để trống, App vẫn chạy nhưng không lưu điểm.
+        
+        const questionsData = [
+            {
+                id: 1, type: 'mcq', correct: 1,
+                question: "Người làm nghề thiết kế kĩ thuật cơ khí động lực thường làm việc ở đâu?",
+                options: ["Các phân xưởng lắp ráp", "Phòng kĩ thuật của các nhà máy, viện nghiên cứu", "Các trạm bảo dưỡng xe", "Ngoài trời, công trường xây dựng"],
+                feedback: "Chính xác! Công việc thiết kế thường thực hiện tại phòng thiết kế, phòng kĩ thuật."
+            },
+            {
+                id: 2, type: 'tf', correct: 1,
+                question: "Thợ sửa chữa ô tô, xe máy KHÔNG phải là người làm nghề cơ khí động lực.",
+                options: ["Đúng", "Sai"],
+                feedback: "Chính xác! Thợ sửa ô tô, xe máy LÀ người làm nghề cơ khí động lực."
+            },
+            {
+                id: 3, type: 'multi', correct: [0, 1, 3, 4],
+                question: "Đâu là các nhóm nghề cơ bản liên quan đến cơ khí động lực?",
+                options: ["Thiết kế kĩ thuật", "Chế tạo máy, thiết bị", "Kinh doanh bất động sản", "Lắp ráp máy, thiết bị", "Bảo dưỡng, sửa chữa"],
+                feedback: "4 nhóm nghề chính: Thiết kế, Chế tạo, Lắp ráp, và Bảo dưỡng/Sửa chữa."
+            },
+            {
+                id: 4, type: 'fill', correct: ["chế tạo", "chế tạo máy"],
+                question: "Điền từ: Công việc _____ là thực hiện gia công các chi tiết máy để tạo ra các bộ phận.",
+                options: [],
+                feedback: "Chế tạo là quá trình gia công chi tiết tại các nhà máy."
+            },
+            {
+                id: 5, type: 'mcq', correct: 2,
+                question: "Người làm công việc lắp ráp máy, thiết bị cơ khí động lực cần có kĩ năng gì?",
+                options: ["Sử dụng phần mềm đồ họa 3D", "Phân tích tài chính", "Dùng dụng cụ lắp ráp, đọc bản vẽ kĩ thuật", "Thiết kế kiến trúc"],
+                feedback: "Cần dùng dụng cụ thành thạo và biết đọc bản vẽ, quy trình lắp ráp."
+            },
+            {
+                id: 6, type: 'mcq', correct: 1,
+                question: "Mục đích chính của công việc bảo dưỡng, sửa chữa là gì?",
+                options: ["Tạo ra máy mới", "Duy trì tình trạng tốt và khắc phục hư hỏng", "Vẽ bản vẽ 3D", "Bán sản phẩm"],
+                feedback: "Bảo dưỡng giúp máy ổn định, sửa chữa giúp khắc phục hư hỏng."
+            },
+            {
+                id: 7, type: 'tf', correct: 0,
+                question: "Người làm nghề thiết kế kĩ thuật cơ khí động lực cần có tư duy sáng tạo.",
+                options: ["Đúng", "Sai"],
+                feedback: "Thiết kế đòi hỏi tư duy sáng tạo để tạo ra giải pháp mới."
+            },
+            {
+                id: 8, type: 'fill', correct: ["kinh tế", "nền kinh tế"],
+                question: "Điền từ: Các công việc này có vai trò quan trọng trong phát triển _____ và giao thông vận tải.",
+                options: [],
+                feedback: "Cơ khí động lực đóng góp lớn cho kinh tế và giao thông."
+            },
+            {
+                id: 9, type: 'multi', correct: [0, 1, 3],
+                question: "Địa điểm nào là nơi làm việc của thợ bảo dưỡng, sửa chữa?",
+                options: ["Gara ô tô", "Các trạm đăng kiểm", "Phòng hành chính", "Trung tâm bảo hành xe"],
+                feedback: "Làm việc tại gara, trạm bảo dưỡng, trạm đăng kiểm..."
+            },
+            {
+                id: 10, type: 'mcq', correct: 0,
+                question: "Máy, thiết bị cơ khí động lực bao gồm loại nào?",
+                options: ["Ô tô, xe máy, tàu thủy", "Máy vi tính, máy in", "Bàn ghế, tủ gỗ", "Đồ gốm sứ"],
+                feedback: "Liên quan đến nguồn động lực như ô tô, tàu thủy, máy bay..."
+            }
+        ];
+
+        const quizApp = {
+            currentQuestionIndex: 0, score: 0, userAnswers: [],
+            studentName: '', studentClass: '', lessonName: '',
+            
+            init: function() {
+                document.addEventListener('dblclick', function(event) { event.preventDefault(); }, { passive: false });
+            },
+
+            startQuiz: function() {
+                const nameInput = document.getElementById('student-name');
+                const classInput = document.getElementById('student-class');
+                const lessonInput = document.getElementById('lesson-name');
+
+                if (!nameInput.value.trim() || !classInput.value.trim()) {
+                    alert("⚠️ Vui lòng điền Họ tên và Lớp!");
+                    return;
+                }
+
+                this.studentName = nameInput.value.trim();
+                this.studentClass = classInput.value.trim();
+                this.lessonName = lessonInput.value.trim();
+
+                document.getElementById('start-screen').classList.add('hidden');
+                document.getElementById('quiz-screen').classList.remove('hidden');
+                document.getElementById('app-container').classList.add('justify-start');
+                document.getElementById('app-container').classList.remove('justify-center');
+                
+                this.loadQuestion();
+            },
+
+            loadQuestion: function() {
+                const q = questionsData[this.currentQuestionIndex];
+                const card = document.querySelector('.custom-scroll');
+                if(card) card.scrollTop = 0;
+
+                document.getElementById('current-q-num').innerText = this.currentQuestionIndex + 1;
+                document.getElementById('current-score').innerText = this.score;
+                document.getElementById('question-text').innerText = q.question;
+                document.getElementById('progress-bar').style.width = `${((this.currentQuestionIndex) / questionsData.length) * 100}%`;
+
+                const typeMap = { 'mcq': 'Trắc nghiệm', 'tf': 'Đúng / Sai', 'multi': 'Chọn nhiều', 'fill': 'Điền từ' };
+                document.getElementById('q-type-label').innerText = typeMap[q.type];
+
+                const optionsContainer = document.getElementById('options-container');
+                optionsContainer.innerHTML = '';
+                document.getElementById('input-container').classList.add('hidden');
+                document.getElementById('multi-submit-container').classList.add('hidden');
+                document.getElementById('feedback-area').classList.add('hidden');
+                
+                // --- SỬA LỖI ---
+                // Mở khóa input và reset style mỗi khi load câu mới
+                const fillInput = document.getElementById('fill-input');
+                fillInput.value = '';
+                fillInput.disabled = false;
+                fillInput.className = "w-full p-4 border-2 border-gray-200 bg-gray-50 rounded-xl focus:border-blue-500 focus:bg-white focus:outline-none text-lg mb-3";
+                
+                // Mở lại nút trả lời
+                document.querySelector('#input-container button').classList.remove('hidden');
+                // --- HẾT SỬA LỖI ---
+
+                if (q.type === 'mcq' || q.type === 'tf') {
+                    q.options.forEach((opt, index) => {
+                        const btn = document.createElement('div');
+                        btn.className = 'option-card w-full text-left p-4 rounded-xl border-2 border-gray-100 bg-white active:bg-blue-50 mb-3 flex items-center group shadow-sm';
+                        btn.onclick = () => this.checkAnswer(index);
+                        btn.innerHTML = `<div class="flex-shrink-0 w-10 h-10 rounded-full bg-gray-100 text-gray-500 flex items-center justify-center mr-4 font-bold text-lg">${String.fromCharCode(65 + index)}</div><span class="text-gray-700 font-medium text-md leading-snug">${opt}</span>`;
+                        optionsContainer.appendChild(btn);
+                    });
+                } else if (q.type === 'multi') {
+                    q.options.forEach((opt, index) => {
+                        const label = document.createElement('label');
+                        label.className = 'option-card w-full flex items-center p-4 rounded-xl border-2 border-gray-100 bg-white active:bg-blue-50 mb-3 shadow-sm';
+                        label.innerHTML = `<input type="checkbox" name="multi-opt" value="${index}" class="w-6 h-6 text-blue-600 rounded focus:ring-blue-500 border-gray-300 mr-4 transform scale-125"><span class="text-gray-700 font-medium text-md select-none">${opt}</span>`;
+                        optionsContainer.appendChild(label);
+                    });
+                    document.getElementById('multi-submit-container').classList.remove('hidden');
+                } else if (q.type === 'fill') {
+                    document.getElementById('input-container').classList.remove('hidden');
+                }
+            },
+
+            checkAnswer: function(selectedIndex) {
+                const q = questionsData[this.currentQuestionIndex];
+                const buttons = document.getElementById('options-container').children;
+                for (let btn of buttons) { btn.onclick = null; btn.classList.add('opacity-70'); }
+
+                let isCorrect = false;
+                if (selectedIndex === q.correct) {
+                    isCorrect = true; this.score += 10;
+                    buttons[selectedIndex].classList.replace('border-gray-100', 'border-green-500');
+                    buttons[selectedIndex].classList.replace('bg-white', 'bg-green-100');
+                    buttons[selectedIndex].classList.add('correct-anim');
+                    buttons[selectedIndex].querySelector('div').classList.add('bg-green-500', 'text-white');
+                } else {
+                    buttons[selectedIndex].classList.replace('border-gray-100', 'border-red-500');
+                    buttons[selectedIndex].classList.replace('bg-white', 'bg-red-100');
+                    buttons[selectedIndex].classList.add('shake-anim');
+                    buttons[selectedIndex].querySelector('div').classList.add('bg-red-500', 'text-white');
+                    buttons[q.correct].classList.add('border-green-500', 'bg-green-50');
+                }
+                this.showFeedback(isCorrect, q.feedback);
+            },
+
+            submitMultiSelect: function() {
+                const q = questionsData[this.currentQuestionIndex];
+                const checkboxes = document.getElementsByName('multi-opt');
+                const selected = [];
+                checkboxes.forEach(cb => { if (cb.checked) selected.push(parseInt(cb.value)); cb.disabled = true; });
+
+                const isCorrect = selected.sort().toString() === q.correct.sort().toString();
+                if (isCorrect) this.score += 10;
+
+                const labels = document.getElementById('options-container').children;
+                Array.from(labels).forEach((label, idx) => {
+                    if (q.correct.includes(idx)) label.classList.add('border-green-500', 'bg-green-50');
+                    else if (selected.includes(idx)) label.classList.add('border-red-500', 'bg-red-50');
+                });
+                document.getElementById('multi-submit-container').classList.add('hidden');
+                this.showFeedback(isCorrect, q.feedback);
+            },
+
+            submitFillIn: function() {
+                const q = questionsData[this.currentQuestionIndex];
+                const inputVal = document.getElementById('fill-input').value.trim().toLowerCase();
+                document.getElementById('fill-input').disabled = true;
+                document.querySelector('#input-container button').classList.add('hidden');
+                
+                const isCorrect = q.correct.some(ans => inputVal === ans.toLowerCase());
+                if (isCorrect) {
+                    this.score += 10;
+                    document.getElementById('fill-input').classList.add('border-green-500', 'bg-green-50', 'text-green-800');
+                } else {
+                    document.getElementById('fill-input').classList.add('border-red-500', 'bg-red-50', 'text-red-800');
+                }
+                this.showFeedback(isCorrect, q.feedback + "<br>" + (isCorrect ? "" : `<b>Đáp án: ${q.correct[0]}</b>`));
+            },
+
+            showFeedback: function(isCorrect, text) {
+                const feedbackArea = document.getElementById('feedback-area');
+                feedbackArea.classList.remove('hidden');
+                setTimeout(() => feedbackArea.classList.remove('translate-y-full'), 10);
+                
+                const title = document.getElementById('feedback-title');
+                const icon = document.getElementById('feedback-icon');
+                
+                if (isCorrect) {
+                    feedbackArea.className = feedbackArea.className.replace(/border-red-500/g, 'border-green-500');
+                    if(!feedbackArea.classList.contains('border-green-500')) feedbackArea.classList.add('border-green-500');
+                    title.innerHTML = "<span class='text-green-700'>Chính xác!</span>";
+                    icon.innerHTML = '<i class="fas fa-check-circle text-green-600"></i>';
+                    this.userAnswers.push(true);
+                } else {
+                    feedbackArea.className = feedbackArea.className.replace(/border-green-500/g, 'border-red-500');
+                    if(!feedbackArea.classList.contains('border-red-500')) feedbackArea.classList.add('border-red-500');
+                    title.innerHTML = "<span class='text-red-700'>Chưa đúng!</span>";
+                    icon.innerHTML = '<i class="fas fa-times-circle text-red-600"></i>';
+                    this.userAnswers.push(false);
+                }
+                document.getElementById('feedback-text').innerHTML = text;
+            },
+
+            nextQuestion: function() {
+                this.currentQuestionIndex++;
+                if (this.currentQuestionIndex < questionsData.length) {
+                    this.loadQuestion();
+                } else {
+                    this.showResults();
+                }
+            },
+
+            showResults: function() {
+                document.getElementById('quiz-screen').classList.add('hidden');
+                document.getElementById('result-screen').classList.remove('hidden');
+                document.getElementById('app-container').classList.add('justify-center');
+
+                document.getElementById('student-result-info').innerHTML = `
+                    <div class="inline-block bg-white border border-blue-100 rounded-xl px-6 py-3 shadow-sm w-full">
+                        <div class="text-blue-800 font-bold text-lg uppercase truncate">${this.studentName}</div>
+                        <div class="text-gray-500 text-sm font-medium">Lớp ${this.studentClass} • ${this.lessonName}</div>
+                    </div>
+                `;
+
+                const right = this.userAnswers.filter(a => a).length;
+                const wrong = this.userAnswers.length - right;
+                document.getElementById('final-score').innerText = this.score;
+                document.getElementById('right-count').innerText = right;
+                document.getElementById('wrong-count').innerText = wrong;
+
+                const msg = document.getElementById('result-message');
+                if (this.score === 100) msg.innerText = "Tuyệt vời! Bạn là chuyên gia!";
+                else if (this.score >= 70) msg.innerText = "Khá lắm! Bạn đã nắm chắc bài.";
+                else msg.innerText = "Cố lên! Hãy ôn lại bài nhé.";
+
+                // GỬI DỮ LIỆU ĐI
+                this.sendToGoogleSheet(this.studentName, this.studentClass, this.lessonName, this.score);
+            },
+
+            sendToGoogleSheet: function(name, className, lesson, score) {
+                const statusEl = document.getElementById('sync-status');
+                
+                if (!GOOGLE_SCRIPT_URL) {
+                    statusEl.innerHTML = '<i class="fas fa-exclamation-triangle text-yellow-500"></i> Chưa cấu hình lưu điểm.';
+                    statusEl.className = "mb-6 p-3 rounded-xl bg-yellow-50 text-sm font-medium text-yellow-700";
+                    return;
+                }
+
+                const data = {
+                    timestamp: new Date().toISOString(),
+                    name: name,
+                    class: className,
+                    lesson: lesson,
+                    score: score
+                };
+
+                // Sử dụng no-cors để gửi đi mà không cần chờ phản hồi chi tiết (Tránh lỗi CORS chặn)
+                fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', 
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(() => {
+                    // Vì no-cors nên ta giả định gửi thành công nếu không có lỗi mạng
+                    statusEl.innerHTML = '<i class="fas fa-check-circle text-green-500"></i> Đã lưu kết quả thành công!';
+                    statusEl.className = "mb-6 p-3 rounded-xl bg-green-50 text-sm font-medium text-green-700 border border-green-200";
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    statusEl.innerHTML = '<i class="fas fa-times-circle text-red-500"></i> Lỗi kết nối. Không thể lưu điểm.';
+                    statusEl.className = "mb-6 p-3 rounded-xl bg-red-50 text-sm font-medium text-red-700 border border-red-200";
+                });
+            },
+
+            resetQuiz: function() {
+                this.currentQuestionIndex = 0;
+                this.score = 0;
+                this.userAnswers = [];
+                document.getElementById('result-screen').classList.add('hidden');
+                document.getElementById('start-screen').classList.remove('hidden');
+            }
+        };
+
+        quizApp.init();
+    </script>
+</body>
+</html>
